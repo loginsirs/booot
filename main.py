@@ -8,8 +8,7 @@ from handlers.answers import handle_answer
 from utils.state import get_user
 from data.evidence import EVIDENCE_ITEMS
 
-# Глобальная переменная, которая будет заполнена из конфига
-DEBUG_USER_ID = 0
+DEBUG_USER_ID = 0  # заполняется из config.json
 
 async def show_evidence_menu(update: Update, context, user, message=None):
     """Показывает меню улик. Если передан message, редактирует его, иначе создаёт новое."""
@@ -256,7 +255,7 @@ async def button_handler(update: Update, context):
         except:
             pass
         msg = await update.effective_chat.send_message(
-            "⚖️ *Введите полное имя подозреваемого (Фамилия Имя Отчество)",
+            "⚖️ *Введите полное имя подозреваемого (Фамилия Имя Отчество):*\nНапример: Алексей Владимирович Ковалёв",
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Отмена", callback_data="menu", style="danger")]]),
             parse_mode="Markdown")
         user.menu_message_id = msg.message_id
@@ -318,8 +317,10 @@ async def debug_all(update: Update, context):
     user.evidence_unlocked = True
     user.interrogations_total = 2
     user.total_solved = 100
+    # Сбрасываем таймер: теперь elapsed станет > 3600, обвинение доступно сразу
+    user.game_start_time = time.time() - 3601  # 3601 секунда назад – час уже прошёл
 
-    await update.message.reply_text("✅ Все улики, допросы, сейф и задачи разблокированы!")
+    await update.message.reply_text("✅ Все улики, допросы, сейф и задачи разблокированы! Таймер сброшен.")
     await update_menu(update, context, user)
 
 async def menu_command(update: Update, context):

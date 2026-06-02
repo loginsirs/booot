@@ -19,7 +19,7 @@ async def handle_answer(update: Update, context: ContextTypes.DEFAULT_TYPE):
         config = context.bot_data["config"]
         culprit = config.get("culprit", "Алексей Владимирович Ковалёв")
         elapsed = time.time() - user.game_start_time if user.game_start_time else 0
-        if elapsed < 1:
+        if elapsed < 3600:   # было 5400, теперь 3600 (1 час)
             await update.message.reply_text("⏱️ *Обвинение пока недоступно.*", parse_mode="Markdown")
             await update_menu(update, context, user)
             return
@@ -38,7 +38,7 @@ async def handle_answer(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     parse_mode="Markdown"
                 )
 
-            # Финальный текст развязки
+            # Финальный текст развязки (без форматирования)
             final_text = (
                 "После тщательного расследования правда наконец была раскрыта.\n\n"
                 "Выяснилось, что за попыткой незаконной продажи секретного проекта стояли Максим Беляев и вторая личность Алексея Ветрова. "
@@ -56,7 +56,7 @@ async def handle_answer(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "Проект оказался крайне успешным, что привело к значительному росту стоимости акций компании и укреплению её позиций на рынке.\n\n"
                 "Дело было закрыто. Тайна раскрыта, виновные понесли наказание, а справедливость восторжествовала."
             )
-            await update.message.reply_text(final_text)
+            await update.message.reply_text(final_text, parse_mode=None)
 
             user.game_active = False
         else:
